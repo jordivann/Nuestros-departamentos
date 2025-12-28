@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import "./FullscreenGallery.css";
+import "./FullScreenGallery.css";
 
 interface Props {
   images: string[];

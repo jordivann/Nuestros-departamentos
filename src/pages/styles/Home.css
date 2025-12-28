@@ -1,0 +1,17 @@
+.home-container {
+  width: 100%;
+  padding: 40px 20px;
+  background-color: #f3f0f8;
+  display: flex;
+  justify-content: center;
+  padding-top: 60px;
+}
+
+.home-grid {
+  width: 100%;
+  max-width: 1300px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 0 auto;
+}

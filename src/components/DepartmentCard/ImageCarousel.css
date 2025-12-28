@@ -1,0 +1,106 @@
+/* ======================
+   HERO IMAGE CAROUSEL
+   ====================== */
+
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 290px;                /* >>> PROTAGONISMO REAL */
+  border-radius: 18px;          /* Borde más moderno */
+  overflow: hidden;
+  background: #f3eefc;
+}
+
+/* Pantallas grandes: imagen aún más grande */
+@media (min-width: 900px) {
+  .carousel {
+    height: 380px;
+  }
+}
+
+.carousel-media {
+  width: 100%;
+  height: 100%;
+}
+
+/* IMAGENES Y VIDEOS */
+.carousel-image,
+.carousel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;             /* Imagen hero */
+  transition: transform 0.4s ease;
+}
+
+/* Efecto suave de movimiento al cambiar */
+.carousel-media:hover .carousel-image {
+  transform: scale(1.03);
+}
+
+/* ======================
+   BOTONES DE NAVEGACIÓN
+   ====================== */
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(20, 20, 35, 0.35);  /* Más moderno */
+  backdrop-filter: blur(4px);          /* efecto vidrio */
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.25s ease;
+}
+
+.carousel-btn:hover {
+  background: rgba(20, 20, 35, 0.55);
+}
+
+.carousel-btn.left {
+  left: 12px;
+}
+
+.carousel-btn.right {
+  right: 12px;
+}
+
+/* Para mobile: botones más pequeños y suaves */
+@media (max-width: 600px) {
+  .carousel-btn {
+    padding: 6px 10px;
+    font-size: 1.25rem;
+  }
+}
+
+/* ======================
+   INDICADORES
+   ====================== */
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  transition: 0.25s;
+}
+
+.dot.active {
+  background-color: #ffffff;
+  transform: scale(1.4);
+}
+
+

@@ -1,0 +1,138 @@
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f1eef8;
+  color: #2c2a33; /* textos más oscuros */
+}
+
+/* Sidebar */
+.admin-sidebar {
+  width: 240px;
+  background: #ffffff;
+  padding: 22px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #5a3ea8;
+}
+
+.admin-nav a {
+  display: block;
+  padding: 10px 0;
+  color: #3a3642;
+  text-decoration: none;
+  font-size: 1.05rem;
+  transition: color 0.2s ease;
+}
+
+.admin-nav a:hover {
+  color: #5a3ea8;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 12px;
+  background: #e3d7fb;
+  color: #5a3ea8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #d6c9fa;
+}
+
+/* Content */
+.admin-content {
+  flex: 1;
+  padding: 40px;
+  color: #2a2731;
+}
+
+/* Headers */
+.admin-header h1 {
+  color: #3a2f52;
+  font-size: 1.8rem;
+}
+
+.btn-primary {
+  padding: 10px 16px;
+  background: #5a3ea8;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: #4c3196;
+}
+
+/* Table */
+.department-table {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.department-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 0.8fr auto;
+  padding: 14px 22px;
+  border-bottom: 1px solid #eee;
+  color: #2f2c36;
+}
+
+
+.actions a {
+  margin-left: 12px;
+  color: #5a3ea8;
+  font-weight: 500;
+}
+
+.btn-delete {
+  color: #d9534f !important;
+}
+
+/* Form */
+.admin-form-container {
+  background: white;
+  color: #2a2731;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.admin-form input,
+.admin-form textarea {
+  background: #f9f7ff;
+  border: 1px solid #ccc;
+}
+
+/* Características */
+.caracteristicas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: capitalize;
+  color: #3b3843;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: #777;
+  margin-bottom: 12px;
+}

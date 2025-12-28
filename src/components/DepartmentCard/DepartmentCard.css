@@ -1,0 +1,183 @@
+/* =======================
+   BOOKING CARD – DESKTOP
+   ======================= */
+
+.linkDetail{
+  text-decoration: none;
+  width:60%;
+}
+
+.booking-card {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* Imagen grande estilo Booking */
+.booking-card-image {
+  width: 40%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.booking-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Columna de información */
+.booking-card-info {
+  /* width: 60%; */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.booking-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.booking-address {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.booking-description {
+  color: #444;
+  line-height: 1.4;
+}
+
+/* Tags estilo Booking (cuadraditos azules redondeados) */
+.booking-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-tag {
+  background: #e8f0ff;
+  color: #2a5bd7;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Botón */
+.booking-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  background: #2a5bd7;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.booking-btn:hover {
+  background: #1f48aa;
+}
+
+/* =================================
+   BOOKING MOBILE LAYOUT (<700px)
+   ================================= */
+
+@media (max-width: 700px) {
+  .booking-card {
+    flex-direction: column;
+    padding: 0;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .booking-card-image {
+    width: 100%;
+    height: 290px;
+  }
+
+  .booking-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .booking-card-info {
+    width: 100%;
+    padding: 16px;
+    gap: 6px;
+  }
+
+  .booking-title {
+    font-size: 1.35rem;
+  }
+
+  .booking-description {
+    font-size: 0.9rem;
+  }
+
+  .booking-btn {
+    margin-top: 10px;
+    width: fit-content;
+  }
+  .linkDetail{
+    width:100%;
+  }
+}
+@media (max-width: 900px) {
+  .card-full,
+  .card-full.reverse {
+    flex-direction: column;
+  }
+
+  .card-full-media,
+  .card-full-body {
+    width: 100%;
+  }
+
+  .card-full-media {
+    height: auto;
+  }
+}
+@media (max-width: 900px) {
+  .card-full-media {
+    height: 220px !important;   /* >>> Ahora sí aparece el carrusel */
+    flex-shrink: 0 !important;  /* >>> Evita que flex lo aplaste */
+    overflow: hidden !important;
+  }
+}
+/* PRICE */
+.booking-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.price-from {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.price-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1f48aa;
+}
+
+.price-night {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.price-note {
+  font-size: 0.75rem;
+  color: #888;
+}
+

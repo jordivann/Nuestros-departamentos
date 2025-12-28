@@ -1,0 +1,8 @@
+* {
+  box-sizing: border-box;
+}
+html, body {
+  overflow-x: hidden;
+  background: #f4f2fa !important;  /* el mismo fondo del Home */
+  min-height: 100vh;
+}

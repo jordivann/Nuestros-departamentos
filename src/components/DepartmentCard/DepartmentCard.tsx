@@ -2,10 +2,11 @@ import "./DepartmentCard.css";
 import { Link } from "react-router-dom";
 import { type Departamento } from "../../types/Departamento";
 import ImageCarousel from "./ImageCarousel";
+import CharacteristicsIcons from "./CharacteristicIcons";
+import WhatsappButton from '../ContactButton/WhatsappButton';
 
 interface Props {
   departamento: Departamento;
-  index: number;
 }
 
 export default function DepartmentCard({ departamento }: Props) {
@@ -19,58 +20,61 @@ export default function DepartmentCard({ departamento }: Props) {
     precio_base_noche,
   } = departamento;
 
-  const safeImages =
-    Array.isArray(imagenes) && imagenes.length > 0
-      ? imagenes
-      : ["/fallback.jpg"];
-
-  const desc = typeof descripcion === "string" ? descripcion : "";
-  const shortDesc = desc.length > 120 ? desc.slice(0, 120) + "..." : desc;
+  const shortDesc =
+    descripcion?.length > 120
+      ? descripcion.slice(0, 120) + "…"
+      : descripcion;
 
   return (
-    <div className="booking-card">
+    <article className="department-card">
 
       {/* IMAGEN */}
-      <div className="booking-card-image">
-        <ImageCarousel images={safeImages} />
+      <div className="card-media">
+        <ImageCarousel images={imagenes} />
       </div>
 
-      <Link to={`/departamento/${id}`} className="linkDetail">
-        <div className="booking-card-info">
+      {/* CONTENIDO */}
+      <div className="card-body">
 
-          <h2 className="booking-title">{titulo}</h2>
-          <p className="booking-address">{direccion}</p>
+        <header className="card-header">
+          <h2 className="card-title">{titulo}</h2>
+          <p className="card-location">{direccion}</p>
+        </header>
 
-          {/* PRECIO */}
-          <div className="booking-price">
+        {/* PRECIO */}
+        {precio_base_noche && (
+          <div className="card-price">
             <span className="price-from">Desde</span>
             <span className="price-value">
-              ${precio_base_noche?.toLocaleString("es-AR")}
+              ${precio_base_noche.toLocaleString("es-AR")}
             </span>
             <span className="price-night">/ noche</span>
           </div>
+        )}
 
-          <p className="price-note">
-            Precio aproximado · Consultar disponibilidad
-          </p>
+        <p className="price-note">
+          Precio orientativo · Consultar disponibilidad
+        </p>
 
-          <p className="booking-description">{shortDesc}</p>
+        {/* DESCRIPCIÓN */}
+        <p className="card-description">{shortDesc}</p>
 
-          <div className="booking-tags">
-            {Object.entries(caracteristicas).map(([key, val]) =>
-              val === true ? (
-                <span key={key} className="booking-tag">
-                  {key.replace("_", " ").toUpperCase()}
-                </span>
-              ) : null
-            )}
-          </div>
+        {/* CARACTERÍSTICAS */}
+        <CharacteristicsIcons caracteristicas={caracteristicas} />
 
-          <Link className="booking-btn" to={`/departamento/${id}`}>
-            Ver departamento →
-          </Link>
-        </div>
-      </Link>
-    </div>
+        {/* CTA */}
+<div className="card-cta-group">
+  <WhatsappButton
+    titulo={titulo}
+    direccion={direccion}
+  />
+
+  <Link to={`/departamento/${id}`} className="card-link">
+    Ver detalles →
+  </Link>
+</div>
+
+      </div>
+    </article>
   );
 }

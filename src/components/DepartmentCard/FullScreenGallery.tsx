@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./FullScreenGallery.css";
 
 interface Props {
@@ -9,59 +9,116 @@ interface Props {
   onPrev: () => void;
 }
 
-export default function FullscreenGallery({
+export default function FullScreenGallery({
   images,
   index,
   onClose,
   onNext,
   onPrev,
 }: Props) {
-  
   const current = images[index];
-  const isVideo = current.match(/\.(mp4|mov|webm)$/i);
+  const isVideo = /\.(mp4|mov|webm)$/i.test(current);
 
-  // Cerrar con Escape y navegar con teclado
+  /* ---------------------------
+     MOBILE SWIPE STATE
+     --------------------------- */
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const MIN_SWIPE = 50;
+
+  /* ---------------------------
+     LOCK SCROLL + KEYBOARD
+     --------------------------- */
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
+    document.body.style.overflow = "hidden";
+
+    const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight") onNext();
       if (e.key === "ArrowLeft") onPrev();
     };
 
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keydown", handleKey);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
+    };
   }, [onClose, onNext, onPrev]);
+
+  /* ---------------------------
+     HANDLE SWIPE
+     --------------------------- */
+  const handleTouchEnd = () => {
+    if (touchStart === null || touchEnd === null) return;
+
+    const distance = touchStart - touchEnd;
+
+    if (distance > MIN_SWIPE) onNext();
+    if (distance < -MIN_SWIPE) onPrev();
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
 
   return (
     <div className="fs-overlay" onClick={onClose}>
-      <div className="fs-content" onClick={(e) => e.stopPropagation()}>
-        
-        {/* Botón cerrar */}
+      <div
+        className="fs-content"
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) =>
+          setTouchStart(e.targetTouches[0].clientX)
+        }
+        onTouchMove={(e) =>
+          setTouchEnd(e.targetTouches[0].clientX)
+        }
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* CLOSE */}
         <button className="fs-close" onClick={onClose}>
           ✕
         </button>
 
-        {/* Media: imagen o video */}
+        {/* MEDIA */}
         {isVideo ? (
           <video
+            key={current}
             src={current}
+            className="fs-media"
             controls
             autoPlay
-            className="fs-media"
+            muted
           />
         ) : (
           <img
+            key={current}
             src={current}
             className="fs-media"
-            alt=""
+            alt="Departamento"
           />
         )}
 
-        {/* Flechas navegación */}
+        {/* COUNTER */}
+        <div className="fs-counter">
+          {index + 1} / {images.length}
+        </div>
+
+        {/* DESKTOP ARROWS */}
         {images.length > 1 && (
           <>
-            <button className="fs-arrow left" onClick={onPrev}>‹</button>
-            <button className="fs-arrow right" onClick={onNext}>›</button>
+            <button
+              className="fs-arrow left"
+              onClick={onPrev}
+            >
+              ‹
+            </button>
+
+            <button
+              className="fs-arrow right"
+              onClick={onNext}
+            >
+              ›
+            </button>
           </>
         )}
       </div>

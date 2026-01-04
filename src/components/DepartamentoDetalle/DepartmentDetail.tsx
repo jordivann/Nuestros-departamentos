@@ -4,10 +4,11 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { type Departamento } from "../../types/Departamento";
 import "./DepartmentDetail.css";
+
 import SkeletonImage from "./Skeleton";
 import FullscreenGallery from "../DepartmentCard/FullScreenGallery";
 import FeatureItem from "./FeatureItem";
-import { FEATURES_MAP } from "../../utils/featureMap";
+import { FEATURES_MAP, type FeatureKey } from "../../utils/featureMap";
 import AppLoader from "../AppLoader";
 
 export default function DepartmentDetail() {
@@ -18,91 +19,96 @@ export default function DepartmentDetail() {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
-  const openGallery = (i: number) => {
-    setGalleryIndex(i);
-    setGalleryOpen(true);
-  };
-
-  const next = () =>
-    setGalleryIndex((i) => (i + 1) % item!.imagenes.length);
-
-  const prev = () =>
-    setGalleryIndex((i) => (i - 1 + item!.imagenes.length) % item!.imagenes.length);
-
   useEffect(() => {
     async function load() {
       if (!id) return;
+
       const ref = doc(db, "departamentos", id);
       const snap = await getDoc(ref);
+
       if (snap.exists()) {
         setItem({ id: snap.id, ...snap.data() } as Departamento);
       }
+
       setLoading(false);
     }
+
     load();
   }, [id]);
 
-  if (loading) return <AppLoader />;
+  if (loading) return <AppLoader visible={true} />;
   if (!item) return <p>No encontrado.</p>;
 
-  // Encuentra la primera imagen válida (no video)
+  /* ---------------------------
+     MEDIA PRINCIPAL (NO VIDEO)
+     --------------------------- */
   const getFirstImage = (arr: string[]) => {
     if (!Array.isArray(arr)) return "/fallback.jpg";
 
     for (const media of arr) {
-      const isVideo = media.match(/\.(mp4|mov|webm)$/i);
-      if (!isVideo) return media; // primera imagen real
+      if (!media.match(/\.(mp4|mov|webm)$/i)) return media;
     }
 
-    return "/fallback.jpg"; // si todas son videos
+    return "/fallback.jpg";
   };
+
   const mainImage = getFirstImage(item.imagenes);
+
+  const next = () =>
+    setGalleryIndex((i) => (i + 1) % item.imagenes.length);
+
+  const prev = () =>
+    setGalleryIndex(
+      (i) => (i - 1 + item.imagenes.length) % item.imagenes.length
+    );
 
   return (
     <div className="detail-wrapper">
-
       {/* HERO */}
       <div
         className="detail-hero"
         style={{ backgroundImage: `url(${mainImage})` }}
       >
         <div className="hero-gradient" />
-        <h1 className="hero-title">{item.titulo}</h1>
+        <h1 className="hero-title-detail">{item.titulo}</h1>
       </div>
 
-
-      {/* CONTENT GRID */}
+      {/* CONTENT */}
       <div className="detail-content">
-
-        {/* LEFT SIDE */}
+        {/* LEFT */}
         <div className="detail-left">
+          {/* PRECIO */}
           <section className="section-box">
-              <h2>Precio</h2>
-
-              <p className="detail-price">
-                Desde <strong>${item.precio_base_noche?.toLocaleString("es-AR")}</strong> por noche
-              </p>
-
-              <p className="detail-price-note">
-                Precio orientativo. Puede variar según fecha y temporada.
-                Consultá disponibilidad por WhatsApp.
-              </p>
-            </section>
-
+            <h2>Precio</h2>
+            <p className="detail-price">
+              Desde{" "}
+              <strong>
+                ${item.precio_base_noche?.toLocaleString("es-AR")}
+              </strong>{" "}
+              por noche
+            </p>
+            <p className="detail-price-note">
+              Precio orientativo. Puede variar según fecha y temporada.
+              Consultá disponibilidad por WhatsApp.
+            </p>
+          </section>
 
           {/* GALERÍA */}
           <section className="section-box">
             <h2>Galería</h2>
-            <div className="image-grid">
 
-              {item.imagenes?.map((media, i) => {
+            <div className="image-grid">
+              {item.imagenes.map((media, i) => {
                 const isVideo = media.match(/\.(mp4|mov|webm)$/i);
 
                 return (
                   <div
                     key={i}
                     className="gallery-thumb"
-                    onClick={() => openGallery(i)}
+                    onClick={() => {
+                      setGalleryIndex(i);
+                      setGalleryOpen(true);
+                    }}
                   >
                     {isVideo ? (
                       <video
@@ -111,15 +117,19 @@ export default function DepartmentDetail() {
                         muted
                         playsInline
                         preload="metadata"
-                        onLoadedMetadata={(e) => e.currentTarget.play()}
+                        onLoadedMetadata={(e) =>
+                          e.currentTarget.play()
+                        }
                       />
                     ) : (
-                      <SkeletonImage src={media} className="thumb-media" />
+                      <SkeletonImage
+                        src={media}
+                        className="thumb-media"
+                      />
                     )}
                   </div>
                 );
               })}
-
             </div>
           </section>
 
@@ -139,19 +149,23 @@ export default function DepartmentDetail() {
             <p className="description-text">{item.descripcion}</p>
           </section>
 
-          {/* CARACTERÍSTICAS */}
+          {/* CARACTERÍSTICAS (CLARAS) */}
           <section className="section-box">
             <h2>Características</h2>
 
             <div className="features-grid">
               {Object.entries(item.caracteristicas)
                 .filter(([key, value]) => {
-                  const feature = FEATURES_MAP[key];
-                  if (!feature) return false;
-                  return value === true || typeof value === "number";
+                  if (!(key in FEATURES_MAP)) return false;
+
+                  if (typeof value === "boolean") return value;
+                  if (typeof value === "number") return value > 0;
+
+                  return false;
                 })
                 .map(([key, value]) => {
-                  const { icon, label } = FEATURES_MAP[key];
+                  const { icon, label } = FEATURES_MAP[key as FeatureKey];
+
                   return (
                     <FeatureItem
                       key={key}
@@ -161,6 +175,7 @@ export default function DepartmentDetail() {
                     />
                   );
                 })}
+
             </div>
           </section>
 
@@ -173,9 +188,8 @@ export default function DepartmentDetail() {
           )}
 
           {/* UBICACIÓN MOBILE */}
-          <section className="section-box detail-location">
+          <section className="section-box detail-location only-mobile">
             <h2>Ubicación</h2>
-
             <p>
               {item.direccion}, {item.ciudad}, {item.provincia}
             </p>
@@ -188,14 +202,10 @@ export default function DepartmentDetail() {
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(
-                  item.direccion +
-                    ", " +
-                    item.ciudad +
-                    ", " +
-                    item.provincia
+                  `${item.direccion}, ${item.ciudad}, ${item.provincia}`
                 )}&output=embed`}
                 style={{ border: 0, borderRadius: "12px" }}
-              ></iframe>
+              />
             </div>
 
             <Link to="/" className="btn-return">
@@ -204,7 +214,7 @@ export default function DepartmentDetail() {
           </section>
         </div>
 
-        {/* RIGHT SIDE DESKTOP */}
+        {/* RIGHT (DESKTOP) */}
         <div className="detail-right desktop-only">
           <div className="info-card">
             <h3 className="info-title">Ubicación</h3>
@@ -221,14 +231,10 @@ export default function DepartmentDetail() {
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(
-                  item.direccion +
-                    ", " +
-                    item.ciudad +
-                    ", " +
-                    item.provincia
+                  `${item.direccion}, ${item.ciudad}, ${item.provincia}`
                 )}&output=embed`}
                 style={{ border: 0, borderRadius: "12px" }}
-              ></iframe>
+              />
             </div>
 
             <Link to="/" className="btn-return">
@@ -236,7 +242,6 @@ export default function DepartmentDetail() {
             </Link>
           </div>
         </div>
-
       </div>
     </div>
   );

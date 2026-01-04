@@ -22,7 +22,7 @@ export default function Home() {
           <span className="hero-eyebrow">HABITANA</span>
 
           <h1 className="hero-title">
-            Espacios pensados <br /> para habitar en calma
+            Espacios pensados <br /> para habitar en calma.
           </h1>
 
           <p className="hero-subtitle">

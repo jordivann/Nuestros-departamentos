@@ -1,106 +1,102 @@
-/* ======================
-   HERO IMAGE CAROUSEL
-   ====================== */
-
-.carousel {
+.carousel-composed {
   position: relative;
+  height: 360px;
+  overflow: visible;
+}
+
+/* =====================
+   CAPAS DE TRANSICIÓN
+   ===================== */
+
+.media-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.media-layer.active {
+  opacity: 1;
+  transform: translateY(0);
+  z-index: 2;
+}
+
+.media-layer.outgoing {
+  opacity: 0;
+  transform: translateY(-8px);
+  z-index: 1;
+}
+
+/* =====================
+   MEDIA PRINCIPAL
+   ===================== */
+
+.media-main {
   width: 100%;
-  height: 290px;                /* >>> PROTAGONISMO REAL */
-  border-radius: 18px;          /* Borde más moderno */
+  height: 100%;
+  object-fit: cover;
+  border-radius: 22px;
+}
+
+/* =====================
+   MEDIA SECONDARY (FIJA)
+   ===================== */
+
+.media-secondary-wrapper {
+  position: absolute;
+  bottom: -22px;
+  left: -22px;
+  width: 180px;
+  height: 240px;
+  border-radius: 18px;
   overflow: hidden;
-  background: #f3eefc;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  background: #000;
+  z-index: 4;
 }
 
-/* Pantallas grandes: imagen aún más grande */
-@media (min-width: 900px) {
-  .carousel {
-    height: 380px;
-  }
-}
-
-.carousel-media {
+.media-secondary {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
-/* IMAGENES Y VIDEOS */
-.carousel-image,
-.carousel-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;             /* Imagen hero */
-  transition: transform 0.4s ease;
+/* VIDEO */
+video.media-main,
+video.media-secondary {
+  object-fit: cover;
 }
 
-/* Efecto suave de movimiento al cambiar */
-.carousel-media:hover .carousel-image {
-  transform: scale(1.03);
-}
+/* =====================
+   BOTÓN
+   ===================== */
 
-/* ======================
-   BOTONES DE NAVEGACIÓN
-   ====================== */
-
-.carousel-btn {
+.carousel-next {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(20, 20, 35, 0.35);  /* Más moderno */
-  backdrop-filter: blur(4px);          /* efecto vidrio */
-  color: #fff;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.92);
   border: none;
-  padding: 8px 12px;
-  font-size: 1.5rem;
-  border-radius: 10px;
+  border-radius: 999px;
+  padding: 8px 14px;
   cursor: pointer;
-  z-index: 10;
-  transition: all 0.25s ease;
+  font-size: 0.9rem;
+  z-index: 6;
 }
 
-.carousel-btn:hover {
-  background: rgba(20, 20, 35, 0.55);
-}
+/* =====================
+   MOBILE
+   ===================== */
 
-.carousel-btn.left {
-  left: 12px;
-}
+@media (max-width: 768px) {
+  .carousel-composed {
+    height: 260px;
+  }
 
-.carousel-btn.right {
-  right: 12px;
-}
-
-/* Para mobile: botones más pequeños y suaves */
-@media (max-width: 600px) {
-  .carousel-btn {
-    padding: 6px 10px;
-    font-size: 1.25rem;
+  .media-secondary-wrapper {
+    display: none;
   }
 }
-
-/* ======================
-   INDICADORES
-   ====================== */
-
-.carousel-indicators {
-  position: absolute;
-  bottom: 12px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  background-color: rgba(255,255,255,0.6);
-  border-radius: 50%;
-  transition: 0.25s;
-}
-
-.dot.active {
-  background-color: #ffffff;
-  transform: scale(1.4);
-}
-
-

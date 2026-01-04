@@ -5,92 +5,71 @@ interface Props {
   images: string[];
 }
 
+const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
+
 export default function ImageCarousel({ images }: Props) {
-  // Filtrado seguro
   const safe = Array.isArray(images)
-    ? images.filter((url) => typeof url === "string" && url.trim().length > 0)
+    ? images.filter((i) => typeof i === "string" && i.trim())
     : [];
 
-  // Si no hay imágenes válidas → fallback seguro
   if (safe.length === 0) {
     return (
-      <div className="carousel">
-        <div className="carousel-media">
-          <img
-            src="/fallback.jpg"
-            alt="departamento"
-            className="carousel-image"
-          />
-        </div>
+      <div className="carousel-composed">
+        <img src="/fallback.jpg" className="media-main" />
       </div>
     );
   }
 
-  const [current, setCurrent] = useState<number>(0);
+  const [index, setIndex] = useState(0);
+  const [prev, setPrev] = useState<number | null>(null);
 
-  const goNext = () => {
-    setCurrent((prev) => (prev + 1) % safe.length);
+  const handleNext = () => {
+    setPrev(index);
+    setIndex((i) => (i + 1) % safe.length);
   };
 
-  const goPrev = () => {
-    setCurrent((prev) => (prev - 1 + safe.length) % safe.length);
-  };
-
-  // Verificar si una URL es video
-  const isVideo = (url: string): boolean => {
-    return (
-      url.endsWith(".mp4") ||
-      url.endsWith(".webm") ||
-      url.endsWith(".mov") ||
-      url.includes("video")
+  const renderMedia = (src: string, className: string) =>
+    isVideo(src) ? (
+      <video
+        src={src}
+        muted
+        loop
+        autoPlay
+        playsInline
+        className={className}
+      />
+    ) : (
+      <img src={src} className={className} />
     );
-  };
 
   return (
-    <div className="carousel">
-      {/* Botones solo si hay más de 1 imagen */}
-      {safe.length > 1 && (
-        <>
-          
-          <button className="carousel-btn left" onClick={goPrev}>
-            ‹
-          </button>
-
-          <button className="carousel-btn right" onClick={goNext}>
-            ›
-          </button>
-        </>
-      )}
-
-      <div className="carousel-media">
-        {isVideo(safe[current]) ? (
-          <video
-            src={safe[current]}
-            controls
-            autoPlay
-            muted
-            loop
-            className="carousel-video"
-          />
-        ) : (
-          <img
-            src={safe[current]}
-            alt="departamento"
-            className="carousel-image"
-          />
-        )}
+    <div className="carousel-composed">
+      {/* MEDIA ACTUAL */}
+      <div className="media-layer active">
+        {renderMedia(safe[index], "media-main")}
       </div>
 
-      {/* Indicadores */}
-      {safe.length > 1 && (
-        <div className="carousel-indicators">
-          {safe.map((_, i) => (
-            <span
-              key={i}
-              className={`dot ${i === current ? "active" : ""}`}
-            />
-          ))}
+      {/* MEDIA SALIENTE */}
+      {prev !== null && (
+        <div className="media-layer outgoing">
+          {renderMedia(safe[prev], "media-main")}
         </div>
+      )}
+
+      {/* MEDIA SECONDARY FIJA */}
+      {safe.length > 1 && (
+        <div className="media-secondary-wrapper">
+          {renderMedia(
+            safe[(index + 1) % safe.length],
+            "media-secondary"
+          )}
+        </div>
+      )}
+
+      {safe.length > 1 && (
+        <button className="carousel-next" onClick={handleNext}>
+          →
+        </button>
       )}
     </div>
   );

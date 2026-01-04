@@ -1,20 +1,23 @@
-    import "./FeatureItem.css";
-
 interface Props {
-  icon: string;
+  icon: React.ElementType;
   label: string;
-  value: boolean | number | string; 
+  value: boolean | number | string;
 }
 
-export default function FeatureItem({ icon, label, value }: Props) {
+export default function FeatureItem({ icon: Icon, label, value }: Props) {
   return (
-    <div className="feature-box">
-      <span className="feature-icon">{icon}</span>
+    <div className="feature-item">
+      <div className="feature-icon">
+        <Icon size={20} strokeWidth={1.6} />
+      </div>
+
       <div className="feature-text">
         <span className="feature-label">{label}</span>
 
         {typeof value === "number" && (
-          <span className="feature-number">{value}</span>
+          <span className="feature-value">
+            : {value}
+          </span>
         )}
       </div>
     </div>

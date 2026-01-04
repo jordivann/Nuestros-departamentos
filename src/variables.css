@@ -1,0 +1,15 @@
+:root {
+  /* BACKGROUND */
+  --color-background-light: #e9e5de;   /* fondo principal, cálido */
+  --color-surface-soft: #A3998E;        /* tarjetas / superficies */
+
+  /* BRAND */
+  --color-brand-primary: #7c4d4c;       /* identidad fuerte */
+  --color-brand-secondary: #a2726D;     /* acento femenino */
+  --color-brand-muted: #7c7358;         /* apoyo visual */
+
+  /* TEXT */
+  --color-text-strong: #42201F;          /* títulos */
+  --color-text-normal: #7c7358;          /* cuerpo */
+  --color-text-soft: #A3998E;             /* hints / estados pasivos */
+}

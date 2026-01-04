@@ -13,20 +13,40 @@ import DepartmentDetail from "./components/DepartamentoDetalle/DepartmentDetail"
 
 import AppLoader from "./components/AppLoader";
 import EditDepartment from "./pages/admin/EditDepartment";
+import { useEffect, useState } from "react";
+import MainLayout from "./layouts/MainLayout";
+import Nosotras from "./pages/Nosotras";
 
 function AppContent() {
   const { loading } = useAuth();
 
-  // 👉 Loader global cuando Firebase está inicializando
-  if (loading) return <AppLoader />;
+  
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    if (!loading) {
+      // ⏱ tiempo mínimo visible del loader
+      const minTime = setTimeout(() => {
+        setShowLoader(false);
+      }, 700); // podés ajustar a 800ms o 1000ms
+
+      return () => clearTimeout(minTime);
+    }
+  }, [loading]);
 
   return (
+    <>
+      <AppLoader visible={showLoader} />
     <Routes>
-      <Route path="/" element={<Home />} />
-
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/departamento/:id" element={<DepartmentDetail />} />
+        <Route path="/nosotras" element={<Nosotras />} />
+        <Route path="/contacto" element={<div>Contacto</div>} />
+      </Route>
+      
       <Route path="/login" element={<LoginPage />} />
 
-      <Route path="/departamento/:id" element={<DepartmentDetail />} />
 
       <Route
         path="/admin"
@@ -42,6 +62,7 @@ function AppContent() {
         <Route path="departamentos/editar/:id" element={<EditDepartment />} />
       </Route>
     </Routes>
+    </>
   );
 }
 

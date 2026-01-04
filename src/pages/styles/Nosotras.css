@@ -1,0 +1,77 @@
+.nosotras-page {
+  background: var(--color-background-light);
+  color: var(--color-text-normal);
+}
+
+/* HERO */
+.nosotras-hero {
+  padding: 120px 24px 60px;
+  text-align: center;
+}
+
+.nosotras-title {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  margin-bottom: 12px;
+  color: var(--color-brand-primary);
+}
+
+.nosotras-subtitle {
+  font-size: 1.05rem;
+  opacity: 0.85;
+}
+
+/* CONTENT */
+.nosotras-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* VALUES */
+.nosotras-values {
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 32px;
+  text-align: center;
+}
+
+.value-item h3 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: var(--color-text-strong);
+}
+
+.value-item p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* CLOSING */
+.nosotras-closing {
+  max-width: 600px;
+  margin: 60px auto 120px;
+  padding: 0 24px;
+  text-align: center;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .nosotras-title {
+    font-size: 2.2rem;
+  }
+
+  .nosotras-hero {
+    padding-top: 100px;
+  }
+}

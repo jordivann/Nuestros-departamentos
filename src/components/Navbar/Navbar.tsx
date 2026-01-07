@@ -39,8 +39,8 @@ export default function Navbar() {
             <NavLink to="/" className="nav-link">
               Departamentos
             </NavLink>
-            <NavLink to="/nosotros" className="nav-link">
-              Nosotros
+            <NavLink to="/nosotras" className="nav-link">
+              Nosotras
             </NavLink>
           </div>
 

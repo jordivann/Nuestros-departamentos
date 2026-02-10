@@ -4,7 +4,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import "./Admin.css";
 import { type Caracteristicas, type Departamento } from "../../types/Departamento";
-import { uploadDepartmentImageToApi as uploadDepartmentImage } from "../../utils/uploadDepartmentUrl";
+import { uploadDepartmentMediaToApi as uploadDepartmentImage } from "../../utils/uploadDepartmentUrl";
 
 const defaultCaracteristicas: Caracteristicas = {
   ac: false,

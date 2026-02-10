@@ -5,7 +5,7 @@ import { db } from "../../services/firebase";
 
 import "./Admin.css";
 import { type Departamento, type Caracteristicas } from "../../types/Departamento";
-import { uploadDepartmentImageToApi as uploadDepartmentImage } from "../../utils/uploadDepartmentUrl";
+import { uploadDepartmentMediaToApi as uploadDepartmentImage } from "../../utils/uploadDepartmentUrl";
 
 export default function EditDepartment() {
   const { id } = useParams();

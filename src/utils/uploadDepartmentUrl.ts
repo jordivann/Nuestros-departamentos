@@ -20,7 +20,7 @@ export async function uploadDepartmentMediaToApi(file: File): Promise<UploadResu
   fd.append("file", file);
 
   // ✅ OJO: sin /api, y usando el endpoint nuevo
-  const res = await fetch(`${base}/upload/department-media`, {
+  const res = await fetch(`${base}/api/upload/department-media`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: fd,

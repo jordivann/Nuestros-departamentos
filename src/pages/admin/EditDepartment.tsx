@@ -149,20 +149,30 @@ export default function EditDepartment() {
 
         <input
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
           onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
         />
+
         <small className="hint">Subí una imagen y agregala a la lista. (JPG/PNG/WEBP &lt; 6MB)</small>
 
-        {previewUrl && (
+        {previewUrl && imageFile && (
           <div style={{ marginTop: 10 }}>
-            <img
-              src={previewUrl}
-              alt="Preview"
-              style={{ width: 280, borderRadius: 12, border: "1px solid rgba(0,0,0,.08)" }}
-            />
+            {imageFile.type.startsWith("video/") ? (
+              <video
+                src={previewUrl}
+                controls
+                style={{ width: 280, borderRadius: 12, border: "1px solid rgba(0,0,0,.08)" }}
+              />
+            ) : (
+              <img
+                src={previewUrl}
+                alt="Preview"
+                style={{ width: 280, borderRadius: 12, border: "1px solid rgba(0,0,0,.08)" }}
+              />
+            )}
           </div>
         )}
+
 
         <button
           type="button"

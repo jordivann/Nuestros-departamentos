@@ -60,6 +60,7 @@ function AppContent() {
         <Route path="departamentos" element={<DepartmentList />} />
         <Route path="departamentos/nuevo" element={<NewDepartment />} />
         <Route path="departamentos/editar/:id" element={<EditDepartment />} />
+        <Route path="departamentos/:id" element={<DepartmentDetail />} />
       </Route>
     </Routes>
     </>

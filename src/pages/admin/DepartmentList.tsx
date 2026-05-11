@@ -30,7 +30,14 @@ export default function DepartmentList() {
     };
   }, []);
 
-  
+  const kpis = useMemo(() => {
+    const total = items.length;
+    const activos = items.filter((d) => d.status).length;
+    const inactivos = total - activos;
+    const prices = items.map((d) => Number(d.precio_base_noche ?? 0)).filter((n) => n > 0);
+    const avg = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0;
+    return { total, activos, inactivos, avg };
+  }, [items]);
 
   const filtered = useMemo(() => {
     const qq = q.trim().toLowerCase();
@@ -59,7 +66,7 @@ export default function DepartmentList() {
           case "ciudad":
             return (a.ciudad ?? "").localeCompare(b.ciudad ?? "", "es");
           case "precio":
-            return (Number(a.precio_base_noche ?? 0) - Number(b.precio_base_noche ?? 0));
+            return Number(a.precio_base_noche ?? 0) - Number(b.precio_base_noche ?? 0);
           case "status":
             return Number(!!a.status) - Number(!!b.status);
           default:
@@ -74,7 +81,7 @@ export default function DepartmentList() {
   }, [items, q, statusFilter, sortKey, sortDir]);
 
   function money(n: number) {
-    return n?.toLocaleString("es-AR");
+    return Number(n || 0).toLocaleString("es-AR");
   }
 
   function toggleSort(key: SortKey) {
@@ -86,58 +93,51 @@ export default function DepartmentList() {
     setSortDir("asc");
   }
 
-  if (loading) return <p>Cargando departamentos...</p>;
+  if (loading) return <p className="adm-loading">Cargando departamentos...</p>;
 
   return (
     <div className="admin-list-container">
-      <div className="admin-header">
+      <div className="admin-header admin-header--hero">
         <div>
+          <span className="admin-kicker">Inventario</span>
           <h1>Departamentos</h1>
-          <p>Administrá el inventario: estado, precio, ubicación y edición rápida.</p>
+          <p>Administrá estado, precio, ubicación, imagen y edición rápida de cada propiedad.</p>
         </div>
 
         <Link className="btn-primary" to="/admin/departamentos/nuevo">
-          + Nuevo Departamento
+          + Nuevo departamento
         </Link>
       </div>
 
-{/*  
-      <section className="adm-kpis">
-        <div className="adm-kpi">
+      <section className="adm-kpis adm-kpis--compact" aria-label="Resumen del listado">
+        <article className="adm-kpi">
           <span className="adm-kpi__label">Total</span>
-          <span className="adm-kpi__value">{kpis.total}</span>
-        </div>
-        <div className="adm-kpi">
+          <strong className="adm-kpi__value">{kpis.total}</strong>
+        </article>
+        <article className="adm-kpi">
           <span className="adm-kpi__label">Activos</span>
-          <span className="adm-kpi__value">{kpis.activos}</span>
-        </div>
-        <div className="adm-kpi">
+          <strong className="adm-kpi__value">{kpis.activos}</strong>
+        </article>
+        <article className="adm-kpi">
           <span className="adm-kpi__label">Inactivos</span>
-          <span className="adm-kpi__value">{kpis.inactivos}</span>
-        </div>
-        <div className="adm-kpi">
-          <span className="adm-kpi__label">Precio promedio</span>
-          <span className="adm-kpi__value">${money(kpis.avg)}</span>
-        </div>
-        <div className="adm-kpi">
-          <span className="adm-kpi__label">Rango</span>
-          <span className="adm-kpi__value">
-            ${money(kpis.min)} – ${money(kpis.max)}
-          </span>
-        </div>
-      </section> */}
+          <strong className="adm-kpi__value">{kpis.inactivos}</strong>
+        </article>
+        <article className="adm-kpi">
+          <span className="adm-kpi__label">Promedio</span>
+          <strong className="adm-kpi__value">${money(kpis.avg)}</strong>
+        </article>
+      </section>
 
-      {/* Toolbar */}
       <section className="adm-toolbar">
         <div className="adm-search">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por título, dirección, ciudad, provincia…"
+            placeholder="Buscar por título, dirección, ciudad o provincia…"
             aria-label="Buscar departamentos"
           />
           {q && (
-            <button className="adm-clear" onClick={() => setQ("")} aria-label="Limpiar búsqueda">
+            <button className="adm-clear" onClick={() => setQ("")} aria-label="Limpiar búsqueda" type="button">
               ×
             </button>
           )}
@@ -146,7 +146,7 @@ export default function DepartmentList() {
         <div className="adm-filters">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "inactive")}
             aria-label="Filtrar por estado"
           >
             <option value="all">Todos</option>
@@ -154,36 +154,31 @@ export default function DepartmentList() {
             <option value="inactive">Inactivos</option>
           </select>
 
-          <select
-            value={sortKey}
-            onChange={(e) => setSortKey(e.target.value as SortKey)}
-            aria-label="Ordenar por"
-          >
+          <select value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)} aria-label="Ordenar por">
             <option value="titulo">Orden: Título</option>
             <option value="ciudad">Orden: Ciudad</option>
             <option value="precio">Orden: Precio</option>
             <option value="status">Orden: Estado</option>
           </select>
 
-          <button className="btn-secondary" onClick={() => setSortDir((p) => (p === "asc" ? "desc" : "asc"))}>
-            {sortDir === "asc" ? "Asc" : "Desc"}
+          <button className="btn-secondary" onClick={() => setSortDir((p) => (p === "asc" ? "desc" : "asc"))} type="button">
+            {sortDir === "asc" ? "Ascendente" : "Descendente"}
           </button>
         </div>
       </section>
 
       <div className="department-table">
-        {/* Header sticky */}
         <div className="dept-head">
-          <button className="dept-head__cell" onClick={() => toggleSort("titulo")}>
+          <button className="dept-head__cell" onClick={() => toggleSort("titulo")} type="button">
             Departamento
           </button>
-          <button className="dept-head__cell" onClick={() => toggleSort("ciudad")}>
+          <button className="dept-head__cell" onClick={() => toggleSort("ciudad")} type="button">
             Ubicación
           </button>
-          <button className="dept-head__cell" onClick={() => toggleSort("precio")}>
+          <button className="dept-head__cell" onClick={() => toggleSort("precio")} type="button">
             Precio
           </button>
-          <button className="dept-head__cell dept-head__cell--right" onClick={() => toggleSort("status")}>
+          <button className="dept-head__cell dept-head__cell--right" onClick={() => toggleSort("status")} type="button">
             Estado / Acciones
           </button>
         </div>
@@ -198,15 +193,15 @@ export default function DepartmentList() {
         {filtered.map((d) => {
           const img = d.imagenes?.[0];
           return (
-            <div key={d.id} className="department-row dept-row--rich">
+            <article key={d.id} className="department-row dept-row--rich">
               <div className="dept-main">
                 <div className="dept-thumb" aria-hidden="true">
-                  {img ? <img src={img} alt="" loading="lazy" /> : <span>—</span>}
+                  {img ? <img src={img} alt="" loading="lazy" /> : <span>H</span>}
                 </div>
                 <div className="dept-title">
-                  <strong title={d.titulo}>{d.titulo}</strong>
+                  <strong title={d.titulo}>{d.titulo || "Sin título"}</strong>
                   <span className="dept-sub" title={d.direccion}>
-                    {d.direccion}
+                    {d.direccion || "Sin dirección cargada"}
                   </span>
                 </div>
               </div>
@@ -227,23 +222,23 @@ export default function DepartmentList() {
                 </span>
 
                 <div className="actions actions--icons">
-                  <Link className="icon-btn" to={`/admin/departamentos/${d.id}`} title="Ver" aria-label="Ver">
+                  <Link className="icon-btn" to={`/admin/departamentos/${d.id}`} title="Ver" aria-label={`Ver ${d.titulo || "departamento"}`}>
                     👁
                   </Link>
-                  <Link className="icon-btn" to={`/admin/departamentos/editar/${d.id}`} title="Editar" aria-label="Editar">
+                  <Link className="icon-btn" to={`/admin/departamentos/editar/${d.id}`} title="Editar" aria-label={`Editar ${d.titulo || "departamento"}`}>
                     ✏️
                   </Link>
                   <Link
                     className="icon-btn icon-btn--danger"
                     to={`/admin/departamentos/eliminar/${d.id}`}
                     title="Eliminar"
-                    aria-label="Eliminar"
+                    aria-label={`Eliminar ${d.titulo || "departamento"}`}
                   >
                     🗑
                   </Link>
                 </div>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>

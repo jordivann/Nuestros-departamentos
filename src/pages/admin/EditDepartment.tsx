@@ -7,6 +7,28 @@ import "./Admin.css";
 import { type Departamento, type Caracteristicas } from "../../types/Departamento";
 import { uploadDepartmentMediaToApi as uploadDepartmentImage } from "../../utils/uploadDepartmentUrl";
 
+const featureLabels: Record<string, string> = {
+  ac: "Aire acondicionado",
+  ambientes: "Ambientes",
+  balcon: "Balcón",
+  cable: "Cable",
+  calefaccion: "Calefacción",
+  capacidad: "Capacidad",
+  estacionamiento: "Estacionamiento",
+  fumadores: "Permite fumadores",
+  lavarropas: "Lavarropas",
+  mascotas: "Acepta mascotas",
+  parrilla: "Parrilla",
+  patio: "Patio",
+  pileta: "Pileta",
+  ropa_cama: "Ropa de cama",
+  secador_pelo: "Secador de pelo",
+  seguridad: "Seguridad",
+  terraza: "Terraza",
+  tv: "TV",
+  wifi: "WiFi",
+};
+
 export default function EditDepartment() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -60,6 +82,14 @@ export default function EditDepartment() {
     }));
   };
 
+  const updateCoordinate = (field: "lat" | "lng", value: number) => {
+    if (!form) return;
+    setForm((prev) => ({
+      ...(prev as Departamento),
+      coordenadas: { ...(prev as Departamento).coordenadas, [field]: value },
+    }));
+  };
+
   function removeImage(index: number) {
     if (!form) return;
     update(
@@ -91,7 +121,6 @@ export default function EditDepartment() {
     setSaving(true);
 
     try {
-      // Si el usuario dejó un archivo seleccionado y no lo subió, lo subimos acá.
       let imagenesFinal = form.imagenes;
 
       if (imageFile) {
@@ -113,120 +142,186 @@ export default function EditDepartment() {
     }
   }
 
-  if (loading || !form) return <p>Cargando departamento...</p>;
+  if (loading || !form) return <p className="adm-loading">Cargando departamento...</p>;
 
   return (
     <div className="admin-form-container">
-      <h1>Editar Departamento</h1>
+      <div className="admin-form-head">
+        <span className="admin-kicker">Edición</span>
+        <h1>Editar departamento</h1>
+        <p>Actualizá los datos comerciales, visuales y operativos de la propiedad.</p>
+      </div>
 
       <form className="admin-form" onSubmit={handleSubmit}>
-        <label>Título</label>
-        <input value={form.titulo} onChange={(e) => update("titulo", e.target.value)} />
+        <section className="form-section">
+          <div className="form-section__head">
+            <h2>Datos principales</h2>
+            <p>Información visible para identificar la propiedad.</p>
+          </div>
 
-        <label>Precio base por noche</label>
-        <input
-          type="number"
-          value={form.precio_base_noche}
-          onChange={(e) => update("precio_base_noche", Number(e.target.value))}
-          min={0}
-        />
-        <small className="hint">Precio orientativo. Puede variar según fecha y temporada.</small>
+          <div className="form-grid form-grid--2">
+            <label className="adm-field">
+              <span>Título</span>
+              <input value={form.titulo} onChange={(e) => update("titulo", e.target.value)} required />
+            </label>
 
-        <label>Dirección</label>
-        <input value={form.direccion} onChange={(e) => update("direccion", e.target.value)} />
-
-        <label>Descripción</label>
-        <textarea value={form.descripcion} onChange={(e) => update("descripcion", e.target.value)} />
-
-        <label>Color principal</label>
-        <input
-          type="color"
-          value={form.color_principal}
-          onChange={(e) => update("color_principal", e.target.value)}
-        />
-
-        <label>Imágenes (Supabase Storage)</label>
-
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
-          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-        />
-
-        <small className="hint">Subí una imagen y agregala a la lista. (JPG/PNG/WEBP &lt; 6MB)</small>
-
-        {previewUrl && imageFile && (
-          <div style={{ marginTop: 10 }}>
-            {imageFile.type.startsWith("video/") ? (
-              <video
-                src={previewUrl}
-                controls
-                style={{ width: 280, borderRadius: 12, border: "1px solid rgba(0,0,0,.08)" }}
+            <label className="adm-field">
+              <span>Precio base por noche</span>
+              <input
+                type="number"
+                value={form.precio_base_noche}
+                onChange={(e) => update("precio_base_noche", Number(e.target.value))}
+                min={0}
               />
+              <small className="hint">Precio orientativo. Puede variar según fecha y temporada.</small>
+            </label>
+          </div>
+
+          <label className="adm-field">
+            <span>Descripción</span>
+            <textarea value={form.descripcion} onChange={(e) => update("descripcion", e.target.value)} />
+          </label>
+        </section>
+
+        <section className="form-section">
+          <div className="form-section__head">
+            <h2>Ubicación</h2>
+            <p>Dirección y coordenadas de referencia.</p>
+          </div>
+
+          <label className="adm-field">
+            <span>Dirección</span>
+            <input value={form.direccion} onChange={(e) => update("direccion", e.target.value)} />
+          </label>
+
+          <div className="form-grid form-grid--3">
+            <label className="adm-field">
+              <span>Ciudad</span>
+              <input value={form.ciudad} onChange={(e) => update("ciudad", e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>Provincia</span>
+              <input value={form.provincia} onChange={(e) => update("provincia", e.target.value)} />
+            </label>
+            <label className="adm-field">
+              <span>País</span>
+              <input value={form.pais} onChange={(e) => update("pais", e.target.value)} />
+            </label>
+          </div>
+
+          <div className="form-grid form-grid--2">
+            <label className="adm-field">
+              <span>Latitud</span>
+              <input type="number" value={form.coordenadas?.lat ?? 0} onChange={(e) => updateCoordinate("lat", Number(e.target.value))} step="any" />
+            </label>
+            <label className="adm-field">
+              <span>Longitud</span>
+              <input type="number" value={form.coordenadas?.lng ?? 0} onChange={(e) => updateCoordinate("lng", Number(e.target.value))} step="any" />
+            </label>
+          </div>
+        </section>
+
+        <section className="form-section">
+          <div className="form-section__head">
+            <h2>Imágenes y estado</h2>
+            <p>Contenido visual, color de marca y publicación.</p>
+          </div>
+
+          <div className="form-grid form-grid--2">
+            <label className="adm-field">
+              <span>Color principal</span>
+              <input type="color" value={form.color_principal} onChange={(e) => update("color_principal", e.target.value)} />
+            </label>
+
+            <label className="checkbox-item checkbox-item--inline">
+              <input type="checkbox" checked={form.status} onChange={(e) => update("status", e.target.checked)} />
+              Departamento activo
+            </label>
+          </div>
+
+          <label className="adm-field">
+            <span>Imágenes / videos</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"
+              onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+            />
+            <small className="hint">Subí una imagen y agregala a la lista. JPG/PNG/WEBP/MP4/WEBM.</small>
+          </label>
+
+          {previewUrl && imageFile && (
+            <div className="media-preview">
+              {imageFile.type.startsWith("video/") ? <video src={previewUrl} controls /> : <img src={previewUrl} alt="Preview" />}
+            </div>
+          )}
+
+          <button type="button" className="btn-secondary btn-fit" onClick={handleUploadAndAdd} disabled={!imageFile || imgUploading}>
+            {imgUploading ? "Subiendo..." : "Subir y agregar imagen"}
+          </button>
+
+          <div className="images-list">
+            {form.imagenes.length === 0 ? (
+              <div className="hint">Todavía no hay imágenes cargadas.</div>
             ) : (
-              <img
-                src={previewUrl}
-                alt="Preview"
-                style={{ width: 280, borderRadius: 12, border: "1px solid rgba(0,0,0,.08)" }}
-              />
+              form.imagenes.map((img, i) => (
+                <div key={img + i} className="image-item">
+                  <span>{img}</span>
+                  <button type="button" className="btn-secondary" onClick={() => removeImage(i)}>
+                    Quitar
+                  </button>
+                </div>
+              ))
             )}
           </div>
-        )}
+        </section>
 
+        <section className="form-section">
+          <div className="form-section__head">
+            <h2>Características</h2>
+            <p>Amenities y configuración funcional del departamento.</p>
+          </div>
 
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={handleUploadAndAdd}
-          disabled={!imageFile || imgUploading}
-          style={{ marginTop: 10 }}
-        >
-          {imgUploading ? "Subiendo..." : "Subir y agregar imagen"}
-        </button>
+          <div className="caracteristicas-grid">
+            {Object.entries(form.caracteristicas).map(([key, value]) => (
+              <label key={key} className="checkbox-item">
+                <input
+                  type={typeof value === "boolean" ? "checkbox" : "number"}
+                  checked={typeof value === "boolean" ? value : undefined}
+                  value={typeof value === "number" ? value : undefined}
+                  min={typeof value === "number" ? 0 : undefined}
+                  onChange={(e) =>
+                    updateCaracteristica(
+                      key as keyof Caracteristicas,
+                      typeof value === "boolean" ? e.target.checked : Number(e.target.value)
+                    )
+                  }
+                />
+                {featureLabels[key] ?? key}
+              </label>
+            ))}
+          </div>
+        </section>
 
-        <div className="images-list" style={{ marginTop: 12 }}>
-          {form.imagenes.length === 0 ? (
-            <div className="hint">Todavía no hay imágenes cargadas.</div>
-          ) : (
-            form.imagenes.map((img, i) => (
-              <div key={i} className="image-item" style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {img}
-                </span>
-                <button type="button" className="btn-secondary" onClick={() => removeImage(i)}>
-                  Quitar
-                </button>
-              </div>
-            ))
-          )}
+        <section className="form-section">
+          <div className="form-section__head">
+            <h2>Observaciones internas</h2>
+            <p>Notas de administración o seguimiento.</p>
+          </div>
+
+          <label className="adm-field">
+            <span>Observaciones</span>
+            <textarea value={form.observaciones} onChange={(e) => update("observaciones", e.target.value)} />
+          </label>
+        </section>
+
+        <div className="form-actions">
+          <button type="button" className="btn-secondary" onClick={() => navigate("/admin/departamentos")}>
+            Cancelar
+          </button>
+          <button className="btn-primary" disabled={saving || imgUploading}>
+            {saving ? "Guardando..." : "Guardar cambios"}
+          </button>
         </div>
-
-        <label>Características</label>
-        <div className="caracteristicas-grid">
-          {Object.entries(form.caracteristicas).map(([key, value]) => (
-            <label key={key} className="checkbox-item">
-              <input
-                type={typeof value === "boolean" ? "checkbox" : "number"}
-                checked={typeof value === "boolean" ? value : undefined}
-                value={typeof value === "number" ? value : undefined}
-                onChange={(e) =>
-                  updateCaracteristica(
-                    key as keyof Caracteristicas,
-                    typeof value === "boolean" ? e.target.checked : Number(e.target.value)
-                  )
-                }
-              />
-              {key}
-            </label>
-          ))}
-        </div>
-
-        <label>Observaciones</label>
-        <textarea value={form.observaciones} onChange={(e) => update("observaciones", e.target.value)} />
-
-        <button className="btn-primary" disabled={saving || imgUploading}>
-          {saving ? "Guardando..." : "Guardar Cambios"}
-        </button>
       </form>
     </div>
   );

@@ -15,10 +15,9 @@ export default function AdminDepartmentDetail() {
   const [dept, setDept] = useState<Departamento | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Quick-edit fields (sin tocar el form grande)
   const [quickTitle, setQuickTitle] = useState("");
   const [quickPrice, setQuickPrice] = useState<number>(0);
-  const [quickColor, setQuickColor] = useState<string>("#5a3ea8");
+  const [quickColor, setQuickColor] = useState<string>("#8B6F47");
 
   useEffect(() => {
     let alive = true;
@@ -40,12 +39,9 @@ export default function AdminDepartmentDetail() {
 
       const data = { id: snap.id, ...(snap.data() as Omit<Departamento, "id">) };
       setDept(data);
-
-      // preload quick fields
       setQuickTitle(data.titulo ?? "");
       setQuickPrice(Number(data.precio_base_noche ?? 0));
-      setQuickColor(data.color_principal || "#5a3ea8");
-
+      setQuickColor(data.color_principal || "#8B6F47");
       setLoading(false);
     }
 
@@ -62,7 +58,7 @@ export default function AdminDepartmentDetail() {
     if (!c) return [];
 
     const mapLabels: Record<string, string> = {
-      ac: "Aire Acond.",
+      ac: "Aire acond.",
       balcon: "Balcón",
       cable: "Cable",
       calefaccion: "Calefacción",
@@ -128,17 +124,18 @@ export default function AdminDepartmentDetail() {
     navigator.clipboard?.writeText(text).catch(() => {});
   }
 
-  if (loading) return <p>Cargando…</p>;
+  if (loading) return <p className="adm-loading">Cargando…</p>;
 
   if (!dept) {
     return (
       <div className="admin-list-container">
-        <div className="admin-header">
+        <div className="admin-header admin-header--hero">
           <div>
+            <span className="admin-kicker">Detalle</span>
             <h1>Departamento</h1>
-            <p>No se encontró.</p>
+            <p>No se encontró la propiedad solicitada.</p>
           </div>
-          <button className="btn-secondary" onClick={() => navigate(-1)}>
+          <button className="btn-secondary" onClick={() => navigate(-1)} type="button">
             Volver
           </button>
         </div>
@@ -148,14 +145,9 @@ export default function AdminDepartmentDetail() {
 
   return (
     <div className="admin-detail-page">
-      {/* IZQ: PREVIEW */}
       <section className="adm-preview">
         <div className="adm-preview__hero">
-          {heroImg ? (
-            <img src={heroImg} alt={dept.titulo} loading="lazy" />
-          ) : (
-            <div className="adm-preview__heroEmpty">Sin imagen</div>
-          )}
+          {heroImg ? <img src={heroImg} alt={dept.titulo} loading="lazy" /> : <div className="adm-preview__heroEmpty">Sin imagen</div>}
 
           <div className="adm-preview__badgeRow">
             <span className={`status-badge ${dept.status ? "is-on" : "is-off"}`}>
@@ -175,7 +167,7 @@ export default function AdminDepartmentDetail() {
                     border: "1px solid rgba(0,0,0,.12)",
                   }}
                 />
-                Color
+                Color guía
               </span>
             )}
           </div>
@@ -183,12 +175,15 @@ export default function AdminDepartmentDetail() {
 
         <div className="adm-preview__card">
           <div className="adm-preview__top">
-            <h2 className="adm-preview__title">{dept.titulo}</h2>
+            <div>
+              <span className="admin-kicker">Ficha de propiedad</span>
+              <h1 className="adm-preview__title">{dept.titulo}</h1>
+            </div>
             <div className="adm-preview__price">${money(dept.precio_base_noche)} / noche</div>
           </div>
 
           <div className="adm-preview__meta">
-            <span>{dept.direccion}</span>
+            <span>{dept.direccion || "Sin dirección"}</span>
             <span>·</span>
             <span>{dept.ciudad}, {dept.provincia}</span>
             <span>·</span>
@@ -206,13 +201,18 @@ export default function AdminDepartmentDetail() {
               <span className="adm-muted">Capacidad</span>
               <strong>{dept.caracteristicas?.capacidad ?? "—"}</strong>
             </div>
+            <div className="adm-stat">
+              <span className="adm-muted">Imágenes</span>
+              <strong>{dept.imagenes?.length ?? 0}</strong>
+            </div>
           </div>
 
           {prettyFeatures.length > 0 && (
-            <div className="adm-preview__chips">
-              {prettyFeatures.slice(0, 12).map((t) => (
-                <span key={t} className="badge">{t}</span>
-              ))}
+            <div className="adm-preview__block">
+              <h4>Amenities destacados</h4>
+              <div className="adm-preview__chips">
+                {prettyFeatures.slice(0, 14).map((t) => <span key={t} className="badge">{t}</span>)}
+              </div>
             </div>
           )}
 
@@ -220,24 +220,26 @@ export default function AdminDepartmentDetail() {
             <div className="adm-preview__block">
               <h4>Puntos de interés</h4>
               <div className="adm-preview__chips">
-                {dept.puntos_interes.slice(0, 12).map((p, i) => (
-                  <span key={p + i} className="badge badge--soft">{p}</span>
-                ))}
+                {dept.puntos_interes.slice(0, 12).map((p, i) => <span key={p + i} className="badge badge--soft">{p}</span>)}
               </div>
+            </div>
+          )}
+
+          {dept.observaciones && (
+            <div className="adm-preview__block adm-preview__block--note">
+              <h4>Observaciones internas</h4>
+              <p>{dept.observaciones}</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* DER: PANEL ADMIN */}
       <aside className="adm-panel">
         <div className="adm-panel__sticky">
           <div className="adm-panel__head">
             <div>
-              <h3 style={{ margin: 0 }}>Panel</h3>
-              <p className="adm-muted" style={{ margin: "6px 0 0" }}>
-                Cambios rápidos + acceso directo a edición completa.
-              </p>
+              <h3>Panel rápido</h3>
+              <p className="adm-muted">Acciones frecuentes sin entrar al formulario completo.</p>
             </div>
             <Link className="btn-secondary" to="/admin/departamentos">
               Volver
@@ -250,15 +252,18 @@ export default function AdminDepartmentDetail() {
 
           <div className="adm-panel__block">
             <div className="adm-panel__row">
-              <strong>Estado</strong>
-              <button className="btn-secondary" onClick={toggleStatus} disabled={saving}>
+              <div>
+                <strong>Estado</strong>
+                <p className="adm-muted">Controla si la propiedad queda activa.</p>
+              </div>
+              <button className="btn-secondary" onClick={toggleStatus} disabled={saving} type="button">
                 {dept.status ? "Desactivar" : "Activar"}
               </button>
             </div>
           </div>
 
           <div className="adm-panel__block">
-            <h4 style={{ margin: "0 0 10px" }}>Ajustes rápidos</h4>
+            <h4>Ajustes rápidos</h4>
 
             <label className="adm-field">
               <span>Título</span>
@@ -267,48 +272,27 @@ export default function AdminDepartmentDetail() {
 
             <label className="adm-field">
               <span>Precio base / noche</span>
-              <input
-                type="number"
-                value={quickPrice}
-                onChange={(e) => setQuickPrice(Number(e.target.value))}
-              />
+              <input type="number" value={quickPrice} onChange={(e) => setQuickPrice(Number(e.target.value))} />
             </label>
 
             <label className="adm-field">
               <span>Color principal</span>
-              <input
-                type="color"
-                value={quickColor}
-                onChange={(e) => setQuickColor(e.target.value)}
-                style={{ height: 42, padding: 6 }}
-              />
+              <input type="color" value={quickColor} onChange={(e) => setQuickColor(e.target.value)} />
             </label>
 
-            <button className="btn-primary" onClick={saveQuickFields} disabled={saving}>
+            <button className="btn-primary" onClick={saveQuickFields} disabled={saving} type="button">
               {saving ? "Guardando…" : "Guardar cambios rápidos"}
             </button>
           </div>
 
           <div className="adm-panel__block">
-            <h4 style={{ margin: "0 0 10px" }}>Utilidades</h4>
+            <h4>Utilidades</h4>
 
-            <button
-              className="btn-secondary"
-              onClick={() =>
-                copy(
-                  `${dept.direccion}, ${dept.ciudad}, ${dept.provincia}, ${dept.pais}`
-                )
-              }
-            >
+            <button className="btn-secondary" onClick={() => copy(`${dept.direccion}, ${dept.ciudad}, ${dept.provincia}, ${dept.pais}`)} type="button">
               Copiar dirección
             </button>
 
-            <button
-              className="btn-secondary"
-              onClick={() =>
-                copy(`${dept.coordenadas?.lat ?? ""}, ${dept.coordenadas?.lng ?? ""}`)
-              }
-            >
+            <button className="btn-secondary" onClick={() => copy(`${dept.coordenadas?.lat ?? ""}, ${dept.coordenadas?.lng ?? ""}`)} type="button">
               Copiar coordenadas
             </button>
           </div>
